@@ -2,6 +2,7 @@
 using DShopAPI.Models;
 using DShopAPI.Repositories;
 using DShopAPI.Repository;
+using DShopAPI.ViewModels.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DShopAPI.Controllers
@@ -28,22 +29,44 @@ namespace DShopAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(categoryItems);
+            // Map the category items to the response DTO
+            var responseDtoList = categoryItems.Select(item => new CategoryItemResponseDto
+            {
+                Id = item.Id,
+                Name = item.Name,
+                CategoryId = item.CategoryId
+            }).ToList();
+
+            return Ok(responseDtoList);
         }
 
 
+
         [HttpPost]
-        public IActionResult CreateCategoryItem(int categoryId, CategoryItem categoryItem)
+        public IActionResult CreateCategoryItem(int categoryId, [FromBody] CreateCategoryItemRequestDto requestDto)
         {
-            // Assign the category ID to the category item
-            categoryItem.CategoryId = categoryId;
+            // Assign the category ID from the URL to the category item
+            var categoryItem = new CategoryItem
+            {
+                Name = requestDto.Name,
+                CategoryId = categoryId
+            };
 
             // Add category item to the repository
             _categoryItemRepository.Create(categoryItem);
 
+            // Create the response DTO
+            var responseDto = new CreateCategoryItemResponseDto
+            {
+                CategoryId = categoryItem.CategoryId,
+                Name = categoryItem.Name
+            };
+
             // Return the created category item
-            return Ok(categoryItem);
+            return Ok(responseDto);
         }
+
+
 
         [HttpGet("{categoryItemId}")]
         public IActionResult GetCategoryItem(int categoryId, int categoryItemId)
@@ -55,11 +78,20 @@ namespace DShopAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(categoryItem);
+            // Create the response DTO
+            var responseDto = new CategoryItemResponseDto
+            {
+                Id = categoryItem.Id,
+                Name = categoryItem.Name,
+                CategoryId = categoryItem.CategoryId
+            };
+
+            return Ok(responseDto);
         }
 
+
         [HttpPut("{categoryItemId}")]
-        public IActionResult UpdateCategoryItem(int categoryId, int categoryItemId, CategoryItem categoryItem)
+        public IActionResult UpdateCategoryItem(int categoryId, int categoryItemId, [FromBody] CategoryItemUpdateDto categoryItemUpdateDto)
         {
             var existingCategoryItem = _categoryItemRepository.GetById(categoryItemId);
 
@@ -68,14 +100,23 @@ namespace DShopAPI.Controllers
                 return NotFound();
             }
 
-            // Update the existing category item
-            existingCategoryItem.Name = categoryItem.Name;
+            // Update the existing category item with the name from the request body
+            existingCategoryItem.Name = categoryItemUpdateDto.Name;
 
             _categoryItemRepository.Update(existingCategoryItem);
 
-            // Return the updated category item
-            return Ok(existingCategoryItem);
+            // Create a response DTO without the category and products properties
+            var responseDto = new CategoryItemResponseDto
+            {
+                Id = existingCategoryItem.Id,
+                Name = existingCategoryItem.Name,
+                CategoryId = existingCategoryItem.CategoryId
+            };
+
+            // Return the updated category item response
+            return Ok(responseDto);
         }
+
 
         [HttpDelete("{categoryItemId}")]
         public IActionResult DeleteCategoryItem(int categoryId, int categoryItemId)
