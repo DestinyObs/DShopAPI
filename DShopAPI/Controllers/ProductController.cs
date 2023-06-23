@@ -1,9 +1,11 @@
-﻿ using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using DShopAPI.Data;
 using DShopAPI.Interfaces;
 using DShopAPI.Models;
 using DShopAPI.Repositories;
+using DShopAPI.ViewModels.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DShopAPI.Controllers
@@ -44,11 +46,31 @@ namespace DShopAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProduct(int categoryId, int categoryItemId, Product product)
+        public IActionResult CreateProduct(int categoryId, int categoryItemId, AddProductDto productDto)
         {
-            // Assign the category item ID and category ID to the product
-            product.CategoryItemId = categoryItemId;
-            product.CategoryItem.CategoryId = categoryId;
+            // Map the DTO to the Product entity
+            var product = new Product
+            {
+                Name = productDto.Name,
+                Price = productDto.Price,
+                Description = productDto.Description,
+                Quantity = productDto.Quantity,
+                Brand = productDto.Brand,
+                ImageUrl = productDto.ImageUrl,
+                DiscountRate = productDto.DiscountRate,
+                CategoryItemId = categoryItemId,
+                Colors = productDto.Colors.Select(c => new Models.Color { Name = c }).ToList()
+            };
+
+            // Set SizeByLetter or SizeByNumber based on the input sizes
+            if (Enum.TryParse<SizeByLetter>(productDto.Sizes.FirstOrDefault(), out var sizeByLetter))
+            {
+                product.SizeByLetter = sizeByLetter;
+            }
+            else if (int.TryParse(productDto.Sizes.FirstOrDefault(), out var sizeByNumber) && sizeByNumber >= 10 && sizeByNumber <= 99)
+            {
+                product.SizeByNumber = sizeByNumber;
+            }
 
             // Add the product to the repository
             _productRepository.AddProduct(product);
@@ -130,16 +152,36 @@ namespace DShopAPI.Controllers
             // Apply size filter
             if (!string.IsNullOrEmpty(size))
             {
-                products = products.Where(p => p.Sizes.Any(s => s.Size == size));
+                products = products.Where(p =>
+                    (p.SizeByNumber != null && p.SizeByNumber.ToString() == size) ||
+                    (p.SizeByLetter != null && p.SizeByLetter.ToString() == size));
             }
 
             // Apply color filter
-            if (!string.IsNullOrEmpty(color))
+            if (!string.IsNullOrEmpty(color) && products.Any(p => p.Colors != null))
             {
-                products = products.Where(p => p.Colors.Any(c => c.Color == color));
+                products = products.Where(p => p.Colors.Any(c => c.Name == color));
             }
 
+
             return Ok(products);
+            //// Filter the properties to only include the required fields
+            //var filteredProducts = products.Select(p => new
+            //{
+            //    p.Name,
+            //    p.Brand,
+            //    p.Price,
+            //    p.DiscountRate,
+            //    p.ImageUrl,
+            //    p.Rating,
+            //    p.Colors
+
+            //});
+
+            //return Ok(filteredProducts);
         }
+
+
     }
 }
+

@@ -31,6 +31,7 @@ namespace DShopAPI
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 
+
             //linking to the DbContext in Mysql
             builder.Services.AddDbContext<DShopDbContext>(options =>
             {

@@ -4,6 +4,7 @@ using DShopAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DShopAPI.Migrations
 {
     [DbContext(typeof(DShopDbContext))]
-    partial class DShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230622185312_removeProd")]
+    partial class removeProd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +53,7 @@ namespace DShopAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdminUsers", (string)null);
+                    b.ToTable("AdminUsers");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Category", b =>
@@ -67,7 +69,7 @@ namespace DShopAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.CategoryItem", b =>
@@ -88,7 +90,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CategoryItems", (string)null);
+                    b.ToTable("CategoryItems");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Color", b =>
@@ -103,14 +105,9 @@ namespace DShopAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Color", (string)null);
+                    b.ToTable("Color");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Product", b =>
@@ -163,7 +160,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("CategoryItemId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.ProductColor", b =>
@@ -186,7 +183,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductColors", (string)null);
+                    b.ToTable("ProductColors");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.ProductSize", b =>
@@ -208,7 +205,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductSizes", (string)null);
+                    b.ToTable("ProductSizes");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Users", b =>
@@ -243,7 +240,7 @@ namespace DShopAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.CategoryItem", b =>
@@ -255,13 +252,6 @@ namespace DShopAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("DShopAPI.Models.Color", b =>
-                {
-                    b.HasOne("DShopAPI.Models.Product", null)
-                        .WithMany("Colors")
-                        .HasForeignKey("ProductId");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Product", b =>
@@ -317,8 +307,6 @@ namespace DShopAPI.Migrations
 
             modelBuilder.Entity("DShopAPI.Models.Product", b =>
                 {
-                    b.Navigation("Colors");
-
                     b.Navigation("ProductColors");
                 });
 #pragma warning restore 612, 618
