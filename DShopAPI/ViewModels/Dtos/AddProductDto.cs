@@ -19,8 +19,6 @@ public class AddProductDto
 
     public string ImageUrl { get; set; }
 
-    public string DiscountRate { get; set; }
-
     public List<string> Sizes { get; set; }
 
     public List<string> Colors { get; set; }

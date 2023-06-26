@@ -20,18 +20,21 @@ namespace DShopAPI.Models
         public int Quantity { get; set; }
         public float Rating { get; set; }
         public string ImageUrl { get; set; }
-        public string DiscountRate { get; set; }
+        public string? DiscountRate { get; set; }
 
         [Range(10, 99)]
-        public int SizeByNumber { get; set; }
+        public int? SizeByNumber { get; set; }
 
-        public SizeByLetter SizeByLetter { get; set; }
+        public SizeByLetter? SizeByLetter { get; set; }
 
         public int CategoryItemId { get; set; }
         public CategoryItem CategoryItem { get; set; }
 
-        public ICollection<ProductColor> ProductColors { get; set; }
-        public ICollection<Color> Colors { get; set; }
+        public List<ProductSize> ProductSizes { get; set; } = new List<ProductSize>();
+
+        public List<ProductColor> ProductColors { get; set; } = new List<ProductColor>();
+
+
     }
 
     public enum SizeByLetter
@@ -48,5 +51,6 @@ namespace DShopAPI.Models
         public string Name { get; set; }
     }
 
-    
+
+
 }

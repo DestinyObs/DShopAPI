@@ -8,8 +8,8 @@ namespace DShopAPI.Models
         public string? Name { get; set; }
 
         public int CategoryId { get; set; }  // Foreign key property
-        public Category? Category { get; set; } // Navigation property
+        public Category Category { get; set; } // Navigation property
 
-        public List<Product>? Products { get; set; }
+        public List<Product> Products { get; set; } = new List<Product>();
     }
 }

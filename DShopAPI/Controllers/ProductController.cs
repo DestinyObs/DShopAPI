@@ -1,17 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using DShopAPI.Data;
 using DShopAPI.Interfaces;
 using DShopAPI.Models;
 using DShopAPI.Repositories;
 using DShopAPI.ViewModels.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DShopAPI.Controllers
 {
     [ApiController]
-    [Route("api/categories/{categoryId}/categoryitems/{categoryItemId}/[controller]")]
+    [Route("api/categoryitems/{categoryItemId}/[controller]")]
     public class ProductController : ControllerBase
     {
         private readonly IProductRepository _productRepository;
@@ -22,7 +26,7 @@ namespace DShopAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProductsByCategoryItem(int categoryId, int categoryItemId)
+        public IActionResult GetProductsByCategoryItem(int categoryItemId)
         {
             var products = _productRepository.GetProductsByCategoryItem(categoryItemId);
 
@@ -46,41 +50,48 @@ namespace DShopAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProduct(int categoryId, int categoryItemId, AddProductDto productDto)
+        public IActionResult CreateProduct(int categoryItemId, AddProductDto addProductDto)
         {
             // Map the DTO to the Product entity
             var product = new Product
             {
-                Name = productDto.Name,
-                Price = productDto.Price,
-                Description = productDto.Description,
-                Quantity = productDto.Quantity,
-                Brand = productDto.Brand,
-                ImageUrl = productDto.ImageUrl,
-                DiscountRate = productDto.DiscountRate,
+                Name = addProductDto.Name,
+                Price = addProductDto.Price,
+                Description = addProductDto.Description,
+                Quantity = addProductDto.Quantity,
+                Brand = addProductDto.Brand,
+                ImageUrl = addProductDto.ImageUrl,
                 CategoryItemId = categoryItemId,
-                Colors = productDto.Colors.Select(c => new Models.Color { Name = c }).ToList()
+                ProductSizes = addProductDto.Sizes.Select(s => new ProductSize { Size = s }).ToList(),
+                ProductColors = addProductDto.Colors.Select(c => new Models.ProductColor { Color = c }).ToList()
             };
 
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve
+            };
+
+            string json = JsonSerializer.Serialize(product, options);
+
+
             // Set SizeByLetter or SizeByNumber based on the input sizes
-            if (Enum.TryParse<SizeByLetter>(productDto.Sizes.FirstOrDefault(), out var sizeByLetter))
+            if (Enum.TryParse<SizeByLetter>(addProductDto.Sizes.FirstOrDefault(), out var sizeByLetter))
             {
                 product.SizeByLetter = sizeByLetter;
             }
-            else if (int.TryParse(productDto.Sizes.FirstOrDefault(), out var sizeByNumber) && sizeByNumber >= 10 && sizeByNumber <= 99)
+            else if (int.TryParse(addProductDto.Sizes.FirstOrDefault(), out var sizeByNumber) && sizeByNumber >= 10 && sizeByNumber <= 99)
             {
                 product.SizeByNumber = sizeByNumber;
             }
 
             // Add the product to the repository
             _productRepository.AddProduct(product);
-
             // Return the created product
             return Ok(product);
         }
 
         [HttpGet("{productId}")]
-        public IActionResult GetProduct(int categoryId, int categoryItemId, int productId)
+        public IActionResult GetProduct(int categoryItemId, int productId)
         {
             var product = _productRepository.GetProductById(productId);
 
@@ -93,7 +104,7 @@ namespace DShopAPI.Controllers
         }
 
         [HttpPut("{productId}")]
-        public IActionResult UpdateProduct(int categoryId, int categoryItemId, int productId, Product updatedProduct)
+        public IActionResult UpdateProduct(int categoryItemId, int productId, Product updatedProduct)
         {
             var product = _productRepository.GetProductById(productId);
 
@@ -120,7 +131,7 @@ namespace DShopAPI.Controllers
         }
 
         [HttpDelete("{productId}")]
-        public IActionResult DeleteProduct(int categoryId, int categoryItemId, int productId)
+        public IActionResult DeleteProduct(int categoryItemId, int productId)
         {
             var product = _productRepository.GetProductById(productId);
 
@@ -137,7 +148,7 @@ namespace DShopAPI.Controllers
         }
 
         [HttpGet("filter")]
-        public IActionResult FilterProducts(int categoryId, int categoryItemId, decimal minPrice, decimal maxPrice, string size, string color)
+        public IActionResult FilterProducts(int categoryItemId, decimal minPrice, decimal maxPrice, string size, string color)
         {
             var products = _productRepository.GetProductsByCategoryItem(categoryItemId);
 
@@ -158,30 +169,23 @@ namespace DShopAPI.Controllers
             }
 
             // Apply color filter
-            if (!string.IsNullOrEmpty(color) && products.Any(p => p.Colors != null))
+            if (!string.IsNullOrEmpty(color) && products.Any(p => p.ProductColors != null))
             {
-                products = products.Where(p => p.Colors.Any(c => c.Name == color));
+                products = products.Where(p => p.ProductColors.Any(pc => pc.Color == color));
             }
 
+            // Filter the properties to only include the required fields
+            var filteredProducts = products.Select(p => new
+            {
+                p.Name,
+                p.Brand,
+                p.Price,
+                p.DiscountRate,
+                p.ImageUrl,
+                p.Rating
+            });
 
-            return Ok(products);
-            //// Filter the properties to only include the required fields
-            //var filteredProducts = products.Select(p => new
-            //{
-            //    p.Name,
-            //    p.Brand,
-            //    p.Price,
-            //    p.DiscountRate,
-            //    p.ImageUrl,
-            //    p.Rating,
-            //    p.Colors
-
-            //});
-
-            //return Ok(filteredProducts);
+            return Ok(filteredProducts);
         }
-
-
     }
 }
-
