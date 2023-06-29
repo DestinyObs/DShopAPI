@@ -2,14 +2,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 # Set the working directory inside the container
-WORKDIR /app/DShopAPI
+WORKDIR /app
 
 # Copy the project file(s) and restore dependencies
-COPY DShopAPI.csproj ./
+COPY DShopAPI/*.csproj ./
 RUN dotnet restore
 
 # Copy the remaining source code
-COPY . .
+COPY . ./
 
 # Build the application
 RUN dotnet publish -c Release -o out
@@ -21,7 +21,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 WORKDIR /app
 
 # Copy the built application from the build image
-COPY --from=build /app/DShopAPI/out .
+COPY --from=build /app/out .
 
 # Expose the port on which the API will listen
 EXPOSE 80
