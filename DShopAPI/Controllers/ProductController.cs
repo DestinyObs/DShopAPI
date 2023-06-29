@@ -102,9 +102,8 @@ namespace DShopAPI.Controllers
 
             return Ok(product);
         }
-
         [HttpPut("{productId}")]
-        public IActionResult UpdateProduct(int categoryItemId, int productId, Product updatedProduct)
+        public IActionResult UpdateProduct(int categoryItemId, int productId, ProductDto updatedProductDto)
         {
             var product = _productRepository.GetProductById(productId);
 
@@ -114,21 +113,23 @@ namespace DShopAPI.Controllers
             }
 
             // Update the product properties
-            product.Name = updatedProduct.Name;
-            product.Brand = updatedProduct.Brand;
-            product.Price = updatedProduct.Price;
-            product.Description = updatedProduct.Description;
-            product.Quantity = updatedProduct.Quantity;
-            product.Rating = updatedProduct.Rating;
-            product.ImageUrl = updatedProduct.ImageUrl;
-            product.DiscountRate = updatedProduct.DiscountRate;
+            product.Name = updatedProductDto.Name ?? product.Name;
+            product.Brand = updatedProductDto.Brand ?? product.Brand;
+            product.Price = updatedProductDto.Price > 0 ? updatedProductDto.Price : product.Price;
+            product.Description = updatedProductDto.Description ?? product.Description;
+            product.Quantity = updatedProductDto.Quantity > 0 ? updatedProductDto.Quantity : product.Quantity;
+            product.Rating = updatedProductDto.Rating > 0 ? updatedProductDto.Rating : product.Rating;
+            product.ImageUrl = updatedProductDto.ImageUrl ?? product.ImageUrl;
+            product.DiscountRate = updatedProductDto.DiscountRate ?? product.DiscountRate;
 
             // Update the product in the repository
             _productRepository.UpdateProduct(product);
 
+
             // Return the updated product
             return Ok(product);
         }
+
 
         [HttpDelete("{productId}")]
         public IActionResult DeleteProduct(int categoryItemId, int productId)

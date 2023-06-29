@@ -24,6 +24,10 @@ namespace DShopAPI.Models
 
         public string? ConfirmationCode { get; set; }
 
+        public string? ResetPasswordToken { get; set; }
+
+        public DateTime? ResetPasswordTokenExpiration { get; set; }
+
         public DateTime? VerificationCodeExpiration { get; set; } // Add the VerificationCodeExpiration field
 
         // Additional properties and methods can be added as per your requirements
