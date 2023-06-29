@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
 # Copy the project file(s) and restore dependencies
-COPY *.csproj ./
+COPY DShopAPI
 RUN dotnet restore
 
 # Copy the remaining source code
