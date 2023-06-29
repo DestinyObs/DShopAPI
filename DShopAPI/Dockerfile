@@ -1,5 +1,5 @@
-# Use the official .NET Core SDK image as the base image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+# Use the official .NET 6 SDK image as the base image
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -14,8 +14,8 @@ COPY . .
 # Build the application
 RUN dotnet publish -c Release -o out
 
-# Use the official ASP.NET Core runtime image as the base image for the final image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime
+# Use the official .NET 6 ASP.NET runtime image as the base image for the final image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 
 # Set the working directory inside the container
 WORKDIR /app
