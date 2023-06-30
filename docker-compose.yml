@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  dshopapi:
+    image: ${DOCKER_REGISTRY-}dshopapi
+    build:
+      context: .
+      dockerfile: DShopAPI\Dockerfile
