@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Windows</DockerTargetOS>
-    <ProjectGuid>fdbb834f-3fde-46a5-8ac1-4f462ddba21e</ProjectGuid>
+    <ProjectGuid>0782b346-edde-4013-ac3d-36c10c05826c</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://{ServiceIPAddress}{ServicePort}/swagger</DockerServiceUrl>
     <DockerServiceName>dshopapi</DockerServiceName>
