@@ -1,11 +1,12 @@
 ﻿using DShopAPI.Data;
 using DShopAPI.Interfaces;
 using DShopAPI.Models;
-using DShopAPI.Repositories;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DShopAPI.Repository
+namespace DShopAPI.Repositories
 {
     public class ProductRepository : IProductRepository
     {
@@ -43,5 +44,30 @@ namespace DShopAPI.Repository
             _dbContext.Products.Remove(product);
             _dbContext.SaveChanges();
         }
+
+        public IEnumerable<Product> GetAllProducts()
+        {
+            return _dbContext.Products.ToList();
+        }
+
+        public IEnumerable<Product> GetLatestProduct(int count)
+        {
+            return _dbContext.Products.OrderByDescending(p => p.CreatedAt).Take(count).ToList();
+        }
+
+        public IEnumerable<Product> SearchProducts(string query)
+        {
+            query = query.ToLower();
+
+            return _dbContext.Products
+                .Where(p => p.Name.ToLower().Contains(query) || p.Description.ToLower().Contains(query) || p.Brand.ToLower().Contains(query))
+                .ToList();
+        }
+
+        public async Task<Product> GetProductByIdAsync(int productId)
+        {
+            return await _dbContext.Products.FirstAsync(p => p.Id == productId);
+        }
+
     }
 }

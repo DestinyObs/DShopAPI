@@ -34,7 +34,7 @@ namespace DShopAPI.Models
 
         public List<ProductColor> ProductColors { get; set; } = new List<ProductColor>();
 
-
+        public DateTime CreatedAt { get; set; } // Added CreatedAt property
     }
 
     public enum SizeByLetter
@@ -50,7 +50,4 @@ namespace DShopAPI.Models
         public int Id { get; set; }
         public string Name { get; set; }
     }
-
-
-
 }

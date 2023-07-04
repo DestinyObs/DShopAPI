@@ -30,7 +30,9 @@ namespace DShopAPI
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
-
+            builder.Services.AddScoped<INewsletterSubscriberRepository, NewsletterSubscriberRepository>();
+            builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+            builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 
             //linking to the DbContext in Mysql
             builder.Services.AddDbContext<DShopDbContext>(options =>

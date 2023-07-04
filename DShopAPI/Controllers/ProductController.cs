@@ -63,7 +63,8 @@ namespace DShopAPI.Controllers
                 ImageUrl = addProductDto.ImageUrl,
                 CategoryItemId = categoryItemId,
                 ProductSizes = addProductDto.Sizes.Select(s => new ProductSize { Size = s }).ToList(),
-                ProductColors = addProductDto.Colors.Select(c => new Models.ProductColor { Color = c }).ToList()
+                ProductColors = addProductDto.Colors.Select(c => new Models.ProductColor { Color = c }).ToList(),
+                CreatedAt = DateTime.Now
             };
 
             JsonSerializerOptions options = new JsonSerializerOptions

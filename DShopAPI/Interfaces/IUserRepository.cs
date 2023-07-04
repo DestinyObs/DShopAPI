@@ -10,5 +10,6 @@ namespace DShopAPI.Interfaces
         Users GetUserByEmailAndPassword(string email, string password);
         Users GetUserByEmailAndConfirmationCode(string email, string confirmationCode);
         void UpdateUser(Users user);
+        Task<Users> GetUserById(int userId);
     }
 }

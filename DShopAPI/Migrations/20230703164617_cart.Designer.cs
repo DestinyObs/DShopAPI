@@ -4,6 +4,7 @@ using DShopAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DShopAPI.Migrations
 {
     [DbContext(typeof(DShopDbContext))]
-    partial class DShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230703164617_cart")]
+    partial class cart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +53,7 @@ namespace DShopAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdminUsers", (string)null);
+                    b.ToTable("AdminUsers");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.CartItem", b =>
@@ -78,7 +80,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("CartItemId1");
 
-                    b.ToTable("CartItems", (string)null);
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Category", b =>
@@ -94,7 +96,7 @@ namespace DShopAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.CategoryItem", b =>
@@ -115,7 +117,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CategoryItems", (string)null);
+                    b.ToTable("CategoryItems");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.NewsletterSubscriber", b =>
@@ -132,7 +134,7 @@ namespace DShopAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NewsletterSubscribers", (string)null);
+                    b.ToTable("NewsletterSubscribers");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Product", b =>
@@ -187,7 +189,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("CategoryItemId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.ProductColor", b =>
@@ -209,7 +211,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductColors", (string)null);
+                    b.ToTable("ProductColors");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.ProductSize", b =>
@@ -231,7 +233,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductSizes", (string)null);
+                    b.ToTable("ProductSizes");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Review", b =>
@@ -266,7 +268,7 @@ namespace DShopAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Users", b =>
@@ -307,7 +309,7 @@ namespace DShopAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.CartItem", b =>

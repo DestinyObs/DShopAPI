@@ -1,4 +1,5 @@
-﻿using DShopAPI.Models;
+﻿using DShopAPI.Interfaces;
+using DShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DShopAPI.Data
@@ -12,6 +13,9 @@ namespace DShopAPI.Data
         public DbSet<ProductColor> ProductColors { get; set; }
         public DbSet<ProductSize> ProductSizes { get; set; }
         public DbSet<AdminUser> AdminUsers { get; set; }
+        public DbSet<NewsletterSubscriber> NewsletterSubscribers { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         public DShopDbContext(DbContextOptions<DShopDbContext> options) : base(options)
         {
@@ -19,15 +23,21 @@ namespace DShopAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Product>()
-            //    .HasMany(p => p.ProductSizes)
-            //    .WithOne(ps => ps.Product)
-            //    .HasForeignKey(ps => ps.ProductId);
+            modelBuilder.Entity<Category>()
+                .HasMany(c => c.CategoryItems)
+                .WithOne(ci => ci.Category)
+                .HasForeignKey(ci => ci.CategoryId);
 
-            //modelBuilder.Entity<Product>()
-            //    .HasMany(p => p.ProductColors)
-            //    .WithOne(pc => pc.Product)
-            //    .HasForeignKey(pc => pc.ProductId);
+            modelBuilder.Entity<CategoryItem>()
+                .HasOne(ci => ci.Category)
+                .WithMany(c => c.CategoryItems)
+                .HasForeignKey(ci => ci.CategoryId);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.CategoryItem)
+                .WithMany(ci => ci.Products)
+                .HasForeignKey(p => p.CategoryItemId);
+
         }
 
     }

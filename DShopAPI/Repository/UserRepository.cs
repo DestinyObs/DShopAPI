@@ -42,5 +42,9 @@ namespace DShopAPI.Repository
             _dbContext.Users.Update(user);
             _dbContext.SaveChanges();
         }
+        public async Task<Users> GetUserById(int userId)
+        {
+            return await _dbContext.Users.FindAsync(userId);
+        }
     }
 }
