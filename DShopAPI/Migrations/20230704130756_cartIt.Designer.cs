@@ -4,6 +4,7 @@ using DShopAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DShopAPI.Migrations
 {
     [DbContext(typeof(DShopDbContext))]
-    partial class DShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230704130756_cartIt")]
+    partial class cartIt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,6 +120,65 @@ namespace DShopAPI.Migrations
                     b.ToTable("CategoryItems");
                 });
 
+            modelBuilder.Entity("DShopAPI.Models.CustomerOrderInformation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("AccountPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostcodeZip")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CustomerOrderInformation");
+                });
+
             modelBuilder.Entity("DShopAPI.Models.NewsletterSubscriber", b =>
                 {
                     b.Property<int>("Id")
@@ -133,6 +194,89 @@ namespace DShopAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("NewsletterSubscribers");
+                });
+
+            modelBuilder.Entity("DShopAPI.Models.Order", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"), 1L, 1);
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomerOrderInformationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderNotes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId");
+
+                    b.HasIndex("CustomerOrderInformationId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("DShopAPI.Models.OrderHistory", b =>
+                {
+                    b.Property<int>("OrderHistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderHistoryId"), 1L, 1);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderHistoryId");
+
+                    b.ToTable("OrderHistories");
+                });
+
+            modelBuilder.Entity("DShopAPI.Models.OrderItem", b =>
+                {
+                    b.Property<int>("OrderItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"), 1L, 1);
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderSummaryId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderItemId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItem");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Product", b =>
@@ -269,46 +413,6 @@ namespace DShopAPI.Migrations
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("DShopAPI.Models.ShippingMethod", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ShippingMethods");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Delivery within 5-7 business days",
-                            Name = "Standard Shipping",
-                            Price = 500.00m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Delivery within 2-3 business days",
-                            Name = "Express Shipping",
-                            Price = 700.00m
-                        });
-                });
-
             modelBuilder.Entity("DShopAPI.Models.Users", b =>
                 {
                     b.Property<int>("Id")
@@ -368,6 +472,24 @@ namespace DShopAPI.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("DShopAPI.Models.Order", b =>
+                {
+                    b.HasOne("DShopAPI.Models.CustomerOrderInformation", "CustomerOrderInformation")
+                        .WithMany()
+                        .HasForeignKey("CustomerOrderInformationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomerOrderInformation");
+                });
+
+            modelBuilder.Entity("DShopAPI.Models.OrderItem", b =>
+                {
+                    b.HasOne("DShopAPI.Models.Order", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId");
+                });
+
             modelBuilder.Entity("DShopAPI.Models.Product", b =>
                 {
                     b.HasOne("DShopAPI.Models.CategoryItem", "CategoryItem")
@@ -421,6 +543,11 @@ namespace DShopAPI.Migrations
             modelBuilder.Entity("DShopAPI.Models.CategoryItem", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("DShopAPI.Models.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("DShopAPI.Models.Product", b =>

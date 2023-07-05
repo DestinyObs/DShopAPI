@@ -10,6 +10,7 @@ using DShopAPI.ViewModels;
 using DShopAPI.Interfaces;
 using DShopAPI.Repository;
 using DShopAPI.Repositories;
+using DShopAPI.Services;
 
 namespace DShopAPI
 {
@@ -33,6 +34,9 @@ namespace DShopAPI
             builder.Services.AddScoped<INewsletterSubscriberRepository, NewsletterSubscriberRepository>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
             builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
             //linking to the DbContext in Mysql
             builder.Services.AddDbContext<DShopDbContext>(options =>
