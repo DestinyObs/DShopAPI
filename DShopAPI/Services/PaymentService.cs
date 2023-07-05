@@ -1,10 +1,10 @@
 ﻿using DShopAPI.DTOs;
 using DShopAPI.Interfaces;
 using DShopAPI.ViewModels.DTOs;
-using Paystack.Net;
-using Paystack.Net.Models.Transactions;
-using Paystack.Net.SDK.Models.Charge;
-using PayStack.Net;
+using PayPalCheckoutSdk.Core;
+using PayPalCheckoutSdk.Orders;
+using PayPalHttp;
+using Stripe;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -12,20 +12,13 @@ namespace DShopAPI.Services
 {
     public class PaymentService : IPaymentService
     {
-        private readonly PaystackApi _paystackApi;
-
-        public PaymentService(string paystackSecretKey)
-        {
-            _paystackApi = new PaystackApi(paystackSecretKey);
-        }
-
         public async Task<PaymentResultDto> ProcessPayment(PaymentDto paymentDto)
         {
-            if (paymentDto.PaymentMethod == PaymentMethod.PayPal)
+            if (paymentDto.PaymentMethod == DShopAPI.ViewModels.DTOs.PaymentMethod.PayPal)
             {
                 return await ProcessPaymentWithPayPal(paymentDto);
             }
-            else if (paymentDto.PaymentMethod == PaymentMethod.Card)
+            else if (paymentDto.PaymentMethod == DShopAPI.ViewModels.DTOs.PaymentMethod.Card)
             {
                 return await ProcessPaymentWithCard(paymentDto);
             }
@@ -36,37 +29,36 @@ namespace DShopAPI.Services
             }
         }
 
+
         public async Task<PaymentResultDto> ProcessPaymentWithPayPal(PaymentDto paymentDto)
         {
-            // Implement PayPal payment processing logic if applicable
-        }
+            // Set your PayPal environment credentials
+            var environment = new SandboxEnvironment("YOUR_PAYPAL_CLIENT_ID", "YOUR_PAYPAL_CLIENT_SECRET");
+            var client = new PayPalHttpClient(environment);
 
-        public async Task<PaymentResultDto> ProcessPaymentWithCard(PaymentDto paymentDto)
-        {
-            var chargeOptions = new ChargeRequest
+            // Create an order request
+            var orderRequest = new OrdersCreateRequest(); 
+            orderRequest.Prefer("return=representation");
+            orderRequest.RequestBody(new OrderRequest
             {
-                Amount = (int)(paymentDto.Amount * 100), // Amount in kobo (Naira's smallest currency unit)
-                Email = paymentDto.Email,
-                Card = new ChargeCard
-                {
-                    Number = paymentDto.CardNumber,
-                    Cvv = paymentDto.CVV,
-                    ExpiryMonth = paymentDto.ExpiryMonth,
-                    ExpiryYear = paymentDto.ExpiryYear
-                },
-                Metadata = new { order_id = paymentDto.OrderId }
-            };
+                /* Set the properties of the OrderRequest using paymentDto */
+            });
 
-            var chargeResponse = await _paystackApi.Transactions.ChargeCard(chargeOptions);
 
-            if (chargeResponse.Status == true && chargeResponse.Data.Status == "success")
+
+            // Create the order and get the response
+            var response = await client.Execute(orderRequest);
+
+            if (response.StatusCode == HttpStatusCode.Created)
             {
+                var order = response.Result<PayPalCheckoutSdk.Orders.Order>();
+
                 var paymentResult = new PaymentResultDto
                 {
                     IsSuccessful = true,
-                    Message = "Payment processed successfully with Card in Naira.",
-                    TransactionId = chargeResponse.Data.Reference,
-                    PaymentId = chargeResponse.Data.Id
+                    Message = "Payment processed successfully with PayPal.",
+                    PaymentId = order.Id,
+                    TransactionId = order.Id
                 };
 
                 return paymentResult;
@@ -76,11 +68,51 @@ namespace DShopAPI.Services
                 var paymentResult = new PaymentResultDto
                 {
                     IsSuccessful = false,
-                    Message = "Payment failed with Card in Naira."
+                    Message = "Payment failed with PayPal."
                 };
 
                 return paymentResult;
             }
         }
+
+        public async Task<PaymentResultDto> ProcessPaymentWithCard(PaymentDto paymentDto)
+        {
+            // Set your Stripe API key
+            StripeConfiguration.ApiKey = "YOUR_STRIPE_API_KEY";
+
+            // Create a Stripe charge
+            var options = new ChargeCreateOptions
+            {
+                Amount = (long)(paymentDto.Amount * 100), // Amount in cents
+                Currency = "usd",
+                Description = "Payment for Order",
+                Source = paymentDto.CardToken // Token representing the card details
+            };
+
+            var service = new ChargeService();
+            Charge charge = service.Create(options);
+
+            if (charge.Status == "succeeded")
+            {
+                var paymentResult = new PaymentResultDto
+                {
+                    IsSuccessful = true,
+                    Message = "Payment processed successfully with Card."
+                };
+
+                return paymentResult;
+            }
+            else
+            {
+                var paymentResult = new PaymentResultDto
+                {
+                    IsSuccessful = false,
+                    Message = "Payment failed with Card."
+                };
+
+                return paymentResult;
+            }
+        }
+
     }
 }
